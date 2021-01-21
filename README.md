@@ -7,7 +7,7 @@
 
 # Demo
 
-[weather-pwa](weater-pwa-reactjs.netlify.app)
+[weather-pwa](https://weater-pwa-reactjs.netlify.app/)
 
 # Clone 😀😀😀
 
