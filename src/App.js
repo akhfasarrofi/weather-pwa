@@ -51,7 +51,7 @@ const App = () => {
 
     permissionLocation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permission, query]);
+  }, [permission]);
 
   return (
     <div className="main-container">
