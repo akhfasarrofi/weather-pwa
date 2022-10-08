@@ -1,20 +1,57 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from 'react';
 
-import { fetchWeather } from "./weatherApi/WeatherApi";
-import "./App.css";
+import { searchWeather, weatherPosition } from './weather';
+import './App.css';
 
 const App = () => {
-  const [query, setQuery] = useState("");
-  const [weather, setWeather] = useState({});
+  const [query, setQuery] = useState('');
+  const [dataWeather, setDataWeather] = useState({});
+  const [marker, setMarker] = useState({
+    lat: '0',
+    long: '0',
+  });
+  const [permission, setPermission] = useState(false);
 
   const search = async (e) => {
-    if (e.key === "Enter") {
-      const data = await fetchWeather(query);
+    if (e.key === 'Enter') {
+      const response = await searchWeather(query);
 
-      setWeather(data);
-      setQuery("");
+      setDataWeather(response);
+      setQuery('');
     }
   };
+
+  const permissionLocation = async () => {
+    const allowLocation = await navigator.permissions.query({
+      name: 'geolocation',
+    });
+
+    if (allowLocation.state === 'granted') {
+      setPermission(true);
+    }
+  };
+
+  const getDataWeatherByPosition = async () => {
+    const response = await weatherPosition(marker);
+    setDataWeather(response);
+  };
+
+  useEffect(() => {
+    if (permission) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        setMarker({
+          lat: latitude.toString(),
+          long: longitude.toString(),
+        });
+      });
+      getDataWeatherByPosition();
+    }
+
+    permissionLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [permission, query]);
 
   return (
     <div className="main-container">
@@ -26,23 +63,23 @@ const App = () => {
         onChange={(e) => setQuery(e.target.value)}
         onKeyPress={search}
       />
-      {weather.main && (
+      {dataWeather.main && (
         <div className="city">
           <h2 className="city-name">
-            <span>{weather.name}</span>
-            <sup>{weather.sys.country}</sup>
+            <span>{dataWeather.name}</span>
+            <sup>{dataWeather.sys.country}</sup>
           </h2>
           <div className="city-temp">
-            {Math.round(weather.main.temp)}
+            {Math.round(dataWeather.main.temp)}
             <sup>&deg;C</sup>
           </div>
           <div className="info">
             <img
               className="city-icon"
-              src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-              alt={weather.weather[0].description}
+              src={`https://openweathermap.org/img/wn/${dataWeather.weather[0].icon}@2x.png`}
+              alt={dataWeather.weather[0].description}
             />
-            <p>{weather.weather[0].description}</p>
+            <p>{dataWeather.weather[0].description}</p>
           </div>
         </div>
       )}
