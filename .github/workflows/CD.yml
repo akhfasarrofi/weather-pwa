@@ -25,6 +25,14 @@ jobs:
         node-version: [16.x]
         
     steps: 
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with: 
+          node-version: "16.x"
+      - run: npm cache clean --force
+      - run: npm install
+      - run: npm run build
+      
       - name: Deploy to vps
         uses: appleboy/ssh-action@master
         with: 
