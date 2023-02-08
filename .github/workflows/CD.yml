@@ -35,5 +35,4 @@ jobs:
           script: |
             cd /home/dopas/projects
             git clone git@github.com:akhfasarrofi/weather-pwa.git
-            # cp -r /home/runner/work/website/website/build/* /var/www/html
             ls -la
