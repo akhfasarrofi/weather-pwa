@@ -6,34 +6,35 @@ on:
     - master
 
 jobs:
-  build:
-    # using Ubuntu
+  build: 
     runs-on: ubuntu-latest
-
-    steps:
+    steps: 
       - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1 #this installs node and npm for us
-        with:
+      - uses: actions/setup-node@v1
+        with: 
           node-version: "16.x"
-
-      - uses: actions/cache@v1 # this allows for re-using node_modules caching, making builds a bit faster.
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       - run: npm cache clean --force
       - run: npm install
       - run: npm run build
-      - name: executing remote ssh commands using password
-        uses: appleboy/ssh-action@v0.1.7
-        with:
+  
+  deploy: 
+    runs-on: ubuntu-latest
+    strategy: 
+      fail-fast: false
+      matrix:
+        node-version: [16.x]
+        
+    steps: 
+      - name: Deploy to vps
+        uses: appleboy/ssh-action@master
+        with: 
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.PRIVATE_KEY }}
-#           passphrase: dopas
+          key: ${{ secrets.KEY }}
           port: 22
-          script: |
-            cd /home/dopas/projects
-            git clone git@github.com:akhfasarrofi/weather-pwa.git
-            ls -la
+          script: | 
+            cd /home/dopas/projects/weather-pwa
+            git pull origin master
+            npm cache clean --force
+            npm install
+            npm run build
