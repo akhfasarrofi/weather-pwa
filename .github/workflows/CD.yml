@@ -7,20 +7,10 @@ on:
 jobs:
   build: 
     runs-on: ubuntu-latest
-    strategy: 
-      fail-fast: false
-      matrix:
-        node-version: [16.x]
+    environment: master
         
     steps: 
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-        with: 
-          node-version: "16.x"
-      - run: npm cache clean --force
-      - run: npm install
-      - run: npm run build
-      
+      - uses: actions/checkout@v2
       - name: Deploy to vps
         uses: appleboy/ssh-action@master
         with: 
