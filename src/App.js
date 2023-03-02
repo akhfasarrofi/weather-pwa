@@ -4,6 +4,7 @@ import { searchWeather, weatherPosition } from './weather';
 import './App.css';
 
 const App = () => {
+  console.log(process.env.REACT_APP_BASE_URL)
   const [query, setQuery] = useState('');
   const [dataWeather, setDataWeather] = useState({});
   const [marker, setMarker] = useState({
